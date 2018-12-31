@@ -1,0 +1,32 @@
+
+ pmnewup
+
+ Start     Length     Name                   Class
+ 0001:0000 026C3H     PMNEWUP_$C00           CODE
+ 0001:26D0 0D498H     EXTFH___$C00           CODE
+ 0001:FB68 003D4H     CODE                   CODE
+ 0002:0000 00420H     CSEG                   CODE
+ 0003:0000 00751H     PMNEWUP_$D00           FAR_DATA
+ 0004:0000 010AFH     EXTFH___$D00           FAR_DATA
+ 0005:0000 0036EH     PMNEWUP_$I             ICODE_DATA
+ 0006:0000 002C5H     EXTFH___$I             ICODE_DATA
+ 0007:0000 000C0H     LPTSEG                 LPT_DATA
+ 0008:0000 00271H     PMNEWUP_$E             EXTCAL_DATA
+ 0009:0000 0014DH     EXTFH___$E             EXTCAL_DATA
+ 000A:0000 000B0H     PMNEWUP_$H             CTRLBLK_DATA
+ 000B:0000 000B0H     EXTFH___$H             CTRLBLK_DATA
+ 000C:0000 00260H     CBLRUDAT               CBL_DATA
+ 000D:0000 00000H     DUMMY                  DATA
+ 000D:0000 00010H     MFRTEV86               MFDATA
+ 000E:0000 00000H     MFRTEV87               MFDATA
+ 000E:0000 04000H     STACK                  STACK
+
+ Origin   Group
+ 000D:0   DGROUP
+
+ Address   Export                  Alias
+
+ 0001:018A ClientWndProc           ClientWndProc
+ 0001:0190 EWndProc                EWndProc
+
+Program entry point at 0002:0002

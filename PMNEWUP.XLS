@@ -1,0 +1,1641 @@
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   1
+*                                     PMNEWUP.CBL
+* Options: GANIM OMF(obj) LITLINK NOASMLIST GNT(PMNEWUP.OBJ)
+     1$set ans85 mf noosvs defaultbyte"00" callfh"extfh"                                0
+     2*--------------------------------------------------------------*
+     3* PMNEWUP.CBL.
+     4*
+     5* Copyright 1989, Micro Focus Ltd.
+     6* Author B J Edwards
+     7*--------------------------------------------------------------*
+     8                                                                                  0
+     9 environment division.                                                          230 000C
+    10 special-names.                                                                 230 000C
+    11      call-convention 3 is OS2API.                                              230 000C
+    12                                                                                230 000C
+    13*---------------------------------------------------------------*
+    14 input-output section.                                                          230 000C
+    15 file-control.                                                                  230 000C
+    16     select PmFile assign "pmfile.ism"                                          230 000C
+    17     organization is indexed                                                    230 000E
+    18     file status is file-status                                                 230 000E
+    19     record key is file-record-key                                              230 000E
+    20     access is dynamic.                                                         2C3 0010
+    21                                                                                2C3 0010
+    22******************* DATA DIVISION *******************************
+    23 data division.                                                                 2C3 0010
+    24                                                                                2C3 0010
+    25*---------------------------------------------------------------*
+    26 file section.                                                                  2C3 0010
+    27 fd  PmFile.                                                                    2C3 0010
+    28 01  PmFileRecord.                                                              2C8 0011
+    29      03 file-record-key     pic x(5).                                          2C8 0011
+    30      03 file-numeric-value  pic 9(4).                                          2CD 0012
+    31      03 file-another-1      pic x(20).                                         2D1 0013
+    32      03 file-another-2      pic x(20).                                         2E5 0013
+    33                                                                                2E5 0014
+    34  working-storage section.                                                      2FD 0014
+    35                                                                                2FD 0014
+*   36  copy "fcf.78".                                                                2FD 0014
+    37*************************************************
+    38*  Constants Copy file: FCF.78
+    39*************************************************
+    40     78 FCF-TITLEBAR                      VALUE H"01".                          2FD 0014
+    41     78 FCF-SYSMENU                       VALUE H"02".                          300 0014
+    42     78 FCF-MENU                          VALUE H"04".                          300 0014
+    43     78 FCF-SIZEBORDER                    VALUE H"08".                          300 0014
+    44     78 FCF-MINBUTTON                     VALUE H"10".                          300 0014
+    45     78 FCF-MAXBUTTON                     VALUE H"20".                          300 0014
+    46     78 FCF-MINMAX                        VALUE H"30".                          300 0014
+    47     78 FCF-VERTSCROLL                    VALUE H"40".                          300 0014
+    48     78 FCF-HORZSCROLL                    VALUE H"80".                          300 0014
+    49     78 FCF-DLGBORDER                     VALUE H"0100".                        300 0014
+    50     78 FCF-BORDER                        VALUE H"0200".                        300 0014
+    51     78 FCF-SHELLPOSITION                 VALUE H"0400".                        300 0014
+    52     78 FCF-TASKLIST                      VALUE H"0800".                        300 0014
+    53     78 FCF-NOBYTEALIGN                   VALUE H"1000".                        300 0014
+    54     78 FCF-NOMOVEWITHOWNER               VALUE H"2000".                        300 0014
+    55     78 FCF-ICON                          VALUE H"4000".                        300 0014
+    56     78 FCF-ACCELTABLE                    VALUE H"8000".                        300 0014
+    57     78 FCF-SYSMODAL                      VALUE H"010000".                      300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   2
+*                                  PMNEWUP.CBL (FCF.78)
+    58     78 FCF-SCREENALIGN                   VALUE H"020000".                      300 0014
+    59     78 FCF-MOUSEALIGN                    VALUE H"040000".                      300 0014
+    60     78 FCF-PALETTE-NORMAL                VALUE H"080000".                      300 0014
+    61     78 FCF-PALETTE-HELP                  VALUE H"100000".                      300 0014
+    62     78 FCF-PALETTE-POPUPODD              VALUE H"200000".                      300 0014
+    63     78 FCF-PALETTE-POPUPEVEN             VALUE H"400000".                      300 0014
+    64     78 FCF-STANDARD                      VALUE H"08CC3F".                      300 0014
+*   65  copy "en.78".                                                                 300 0014
+    66*************************************************
+    67*  Constants Copy file: EN.78
+    68*************************************************
+    69     78 EN-SETFOCUS                       VALUE H"01".                          300 0014
+    70     78 EN-KILLFOCUS                      VALUE H"02".                          300 0014
+    71     78 EN-CHANGE                         VALUE H"04".                          300 0014
+    72     78 EN-SCROLL                         VALUE H"08".                          300 0014
+    73     78 EN-MEMERROR                       VALUE H"10".                          300 0014
+    74     78 EN-OVERFLOW                       VALUE H"20".                          300 0014
+    75     78 EN-INSERTMODETOGGLE               VALUE H"40".                          300 0014
+*   76  copy "em.78".                                                                 300 0014
+    77*************************************************
+    78*  Constants Copy file: EM.78
+    79*************************************************
+    80     78 EM-QUERYCHANGED                   VALUE H"0140".                        300 0014
+    81     78 EM-QUERYSEL                       VALUE H"0141".                        300 0014
+    82     78 EM-SETSEL                         VALUE H"0142".                        300 0014
+    83     78 EM-SETTEXTLIMIT                   VALUE H"0143".                        300 0014
+    84     78 EM-CUT                            VALUE H"0144".                        300 0014
+    85     78 EM-COPY                           VALUE H"0145".                        300 0014
+    86     78 EM-CLEAR                          VALUE H"0146".                        300 0014
+    87     78 EM-PASTE                          VALUE H"0147".                        300 0014
+    88     78 EM-QUERYFIRSTCHAR                 VALUE H"0148".                        300 0014
+    89     78 EM-SETFIRSTCHAR                   VALUE H"0149".                        300 0014
+    90     78 EM-QUERYREADONLY                  VALUE H"014A".                        300 0014
+    91     78 EM-SETREADONLY                    VALUE H"014B".                        300 0014
+    92     78 EM-SETINSERTMODE                  VALUE H"014C".                        300 0014
+*   93  copy "es.78".                                                                 300 0014
+    94*************************************************
+    95*  Constants Copy file: ES.78
+    96*************************************************
+    97     78 ES-LEFT                           VALUE 0.                              300 0014
+    98     78 ES-CENTER                         VALUE H"01".                          300 0014
+    99     78 ES-RIGHT                          VALUE H"02".                          300 0014
+   100     78 ES-AUTOSCROLL                     VALUE H"04".                          300 0014
+   101     78 ES-MARGIN                         VALUE H"08".                          300 0014
+   102     78 ES-AUTOTAB                        VALUE H"10".                          300 0014
+   103     78 ES-READONLY                       VALUE H"20".                          300 0014
+   104     78 ES-COMMAND                        VALUE H"40".                          300 0014
+   105     78 ES-UNREADABLE                     VALUE H"80".                          300 0014
+   106     78 ES-PICTUREMASK                    VALUE H"0100".                        300 0014
+*  107  copy "cs.78".                                                                 300 0014
+   108*************************************************
+   109*  Constants Copy file: CS.78
+   110*************************************************
+   111     78 CS-MOVENOTIFY                     VALUE H"01".                          300 0014
+   112     78 CS-SIZEREDRAW                     VALUE H"04".                          300 0014
+   113     78 CS-HITTEST                        VALUE H"08".                          300 0014
+   114     78 CS-PUBLIC                         VALUE H"10".                          300 0014
+   115     78 CS-FRAME                          VALUE H"20".                          300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   3
+*                                   PMNEWUP.CBL (CS.78)
+   116     78 CS-CLIPCHILDREN                   VALUE H"20000000".                    300 0014
+   117     78 CS-CLIPSIBLINGS                   VALUE H"10000000".                    300 0014
+   118     78 CS-PARENTCLIP                     VALUE H"08000000".                    300 0014
+   119     78 CS-SAVEBITS                       VALUE H"04000000".                    300 0014
+   120     78 CS-SYNCPAINT                      VALUE H"02000000".                    300 0014
+*  121  copy "wc.78".                                                                 300 0014
+   122*************************************************
+   123*  Constants Copy file: WC.78
+   124*************************************************
+   125     78 WC-STATIC                         VALUE H"FFFF0005".                    300 0014
+   126     78 WC-BUTTON                         VALUE H"FFFF0003".                    300 0014
+   127     78 WC-COMBOBOX                       VALUE H"FFFF0002".                    300 0014
+   128     78 WC-ENTRYFIELD                     VALUE H"FFFF0006".                    300 0014
+   129     78 WC-MLE                            VALUE H"FFFF000A".                    300 0014
+   130     78 WC-LISTBOX                        VALUE H"FFFF0007".                    300 0014
+   131     78 WC-MENU                           VALUE H"FFFF0004".                    300 0014
+   132     78 WC-SCROLLBAR                      VALUE H"FFFF0008".                    300 0014
+   133     78 WC-FRAME                          VALUE H"FFFF0001".                    300 0014
+   134     78 WC-TITLEBAR                       VALUE H"FFFF0009".                    300 0014
+*  135  copy "mb.78".                                                                 300 0014
+   136*************************************************
+   137*  Constants Copy file: MB.78
+   138*************************************************
+   139     78 MB-OK                             VALUE 0.                              300 0014
+   140     78 MB-OKCANCEL                       VALUE H"01".                          300 0014
+   141     78 MB-RETRYCANCEL                    VALUE H"02".                          300 0014
+   142     78 MB-ABORTRETRYIGNORE               VALUE H"03".                          300 0014
+   143     78 MB-YESNO                          VALUE H"04".                          300 0014
+   144     78 MB-YESNOCANCEL                    VALUE H"05".                          300 0014
+   145     78 MB-CANCEL                         VALUE H"06".                          300 0014
+   146     78 MB-ENTER                          VALUE H"07".                          300 0014
+   147     78 MB-ENTERCANCEL                    VALUE H"08".                          300 0014
+   148     78 MB-NOICON                         VALUE 0.                              300 0014
+   149     78 MB-CUANOTIFICATION                VALUE 0.                              300 0014
+   150     78 MB-ICONQUESTION                   VALUE H"10".                          300 0014
+   151     78 MB-ICONEXCLAMATION                VALUE H"20".                          300 0014
+   152     78 MB-CUAWARNING                     VALUE H"20".                          300 0014
+   153     78 MB-ICONASTERISK                   VALUE H"30".                          300 0014
+   154     78 MB-ICONHAND                       VALUE H"40".                          300 0014
+   155     78 MB-CUACRITICAL                    VALUE H"40".                          300 0014
+   156     78 MB-QUERY                          VALUE H"10".                          300 0014
+   157     78 MB-WARNING                        VALUE H"20".                          300 0014
+   158     78 MB-INFORMATION                    VALUE H"30".                          300 0014
+   159     78 MB-CRITICAL                       VALUE H"40".                          300 0014
+   160     78 MB-ERROR                          VALUE H"40".                          300 0014
+   161     78 MB-DEFBUTTON1                     VALUE 0.                              300 0014
+   162     78 MB-DEFBUTTON2                     VALUE H"0100".                        300 0014
+   163     78 MB-DEFBUTTON3                     VALUE H"0200".                        300 0014
+   164     78 MB-APPLMODAL                      VALUE 0.                              300 0014
+   165     78 MB-SYSTEMMODAL                    VALUE H"1000".                        300 0014
+   166     78 MB-HELP                           VALUE H"2000".                        300 0014
+   167     78 MB-MOVEABLE                       VALUE H"4000".                        300 0014
+*  168  copy "wm.78".                                                                 300 0014
+   169*************************************************
+   170*  Constants Copy file: WM.78
+   171*************************************************
+   172     78 WM-NULL                           VALUE 0.                              300 0014
+   173     78 WM-CREATE                         VALUE H"01".                          300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   4
+*                                   PMNEWUP.CBL (WM.78)
+   174     78 WM-DESTROY                        VALUE H"02".                          300 0014
+   175     78 WM-OTHERWINDOWDESTROYED           VALUE H"03".                          300 0014
+   176     78 WM-ENABLE                         VALUE H"04".                          300 0014
+   177     78 WM-SHOW                           VALUE H"05".                          300 0014
+   178     78 WM-MOVE                           VALUE H"06".                          300 0014
+   179     78 WM-SIZE                           VALUE H"07".                          300 0014
+   180     78 WM-ADJUSTWINDOWPOS                VALUE H"08".                          300 0014
+   181     78 WM-CALCVALIDRECTS                 VALUE H"09".                          300 0014
+   182     78 WM-SETWINDOWPARAMS                VALUE H"0A".                          300 0014
+   183     78 WM-QUERYWINDOWPARAMS              VALUE H"0B".                          300 0014
+   184     78 WM-HITTEST                        VALUE H"0C".                          300 0014
+   185     78 WM-ACTIVATE                       VALUE H"0D".                          300 0014
+   186     78 WM-SETFOCUS                       VALUE H"0F".                          300 0014
+   187     78 WM-SETSELECTION                   VALUE H"10".                          300 0014
+   188     78 WM-PPAINT                         VALUE H"11".                          300 0014
+   189     78 WM-PSETFOCUS                      VALUE H"12".                          300 0014
+   190     78 WM-PSYSCOLORCHANGE                VALUE H"13".                          300 0014
+   191     78 WM-PSIZE                          VALUE H"14".                          300 0014
+   192     78 WM-PACTIVATE                      VALUE H"15".                          300 0014
+   193     78 WM-PCONTROL                       VALUE H"16".                          300 0014
+   194     78 WM-COMMAND                        VALUE H"20".                          300 0014
+   195     78 WM-SYSCOMMAND                     VALUE H"21".                          300 0014
+   196     78 WM-HELP                           VALUE H"22".                          300 0014
+   197     78 WM-PAINT                          VALUE H"23".                          300 0014
+   198     78 WM-TIMER                          VALUE H"24".                          300 0014
+   199     78 WM-SEM1                           VALUE H"25".                          300 0014
+   200     78 WM-SEM2                           VALUE H"26".                          300 0014
+   201     78 WM-SEM3                           VALUE H"27".                          300 0014
+   202     78 WM-SEM4                           VALUE H"28".                          300 0014
+   203     78 WM-CLOSE                          VALUE H"29".                          300 0014
+   204     78 WM-QUIT                           VALUE H"2A".                          300 0014
+   205     78 WM-SYSCOLORCHANGE                 VALUE H"2B".                          300 0014
+   206     78 WM-SYSVALUECHANGED                VALUE H"2D".                          300 0014
+   207     78 WM-APPTERMINATENOTIFY             VALUE H"2E".                          300 0014
+   208     78 WM-PRESPARAMCHANGED               VALUE H"2F".                          300 0014
+   209     78 WM-CONTROL                        VALUE H"30".                          300 0014
+   210     78 WM-VSCROLL                        VALUE H"31".                          300 0014
+   211     78 WM-HSCROLL                        VALUE H"32".                          300 0014
+   212     78 WM-INITMENU                       VALUE H"33".                          300 0014
+   213     78 WM-MENUSELECT                     VALUE H"34".                          300 0014
+   214     78 WM-MENUEND                        VALUE H"35".                          300 0014
+   215     78 WM-DRAWITEM                       VALUE H"36".                          300 0014
+   216     78 WM-MEASUREITEM                    VALUE H"37".                          300 0014
+   217     78 WM-CONTROLPOINTER                 VALUE H"38".                          300 0014
+   218     78 WM-CONTROLHEAP                    VALUE H"39".                          300 0014
+   219     78 WM-QUERYDLGCODE                   VALUE H"3A".                          300 0014
+   220     78 WM-INITDLG                        VALUE H"3B".                          300 0014
+   221     78 WM-SUBSTITUTESTRING               VALUE H"3C".                          300 0014
+   222     78 WM-MATCHMNEMONIC                  VALUE H"3D".                          300 0014
+   223     78 WM-SAVEAPPLICATION                VALUE H"3E".                          300 0014
+   224     78 WM-HELPBASE                       VALUE H"0F00".                        300 0014
+   225     78 WM-HELPTOP                        VALUE H"0FFF".                        300 0014
+   226     78 WM-USER                           VALUE H"1000".                        300 0014
+   227     78 WM-MOUSEFIRST                     VALUE H"70".                          300 0014
+   228     78 WM-MOUSELAST                      VALUE H"79".                          300 0014
+   229     78 WM-BUTTONCLICKFIRST               VALUE H"71".                          300 0014
+   230     78 WM-BUTTONCLICKLAST                VALUE H"79".                          300 0014
+   231     78 WM-MOUSEMOVE                      VALUE H"70".                          300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   5
+*                                   PMNEWUP.CBL (WM.78)
+   232     78 WM-BUTTON1DOWN                    VALUE H"71".                          300 0014
+   233     78 WM-BUTTON1UP                      VALUE H"72".                          300 0014
+   234     78 WM-BUTTON1DBLCLK                  VALUE H"73".                          300 0014
+   235     78 WM-BUTTON2DOWN                    VALUE H"74".                          300 0014
+   236     78 WM-BUTTON2UP                      VALUE H"75".                          300 0014
+   237     78 WM-BUTTON2DBLCLK                  VALUE H"76".                          300 0014
+   238     78 WM-BUTTON3DOWN                    VALUE H"77".                          300 0014
+   239     78 WM-BUTTON3UP                      VALUE H"78".                          300 0014
+   240     78 WM-BUTTON3DBLCLK                  VALUE H"79".                          300 0014
+   241     78 WM-CHAR                           VALUE H"7A".                          300 0014
+   242     78 WM-VIOCHAR                        VALUE H"7B".                          300 0014
+   243     78 WM-JOURNALNOTIFY                  VALUE H"7C".                          300 0014
+   244     78 WM-FLASHWINDOW                    VALUE H"40".                          300 0014
+   245     78 WM-FORMATFRAME                    VALUE H"41".                          300 0014
+   246     78 WM-UPDATEFRAME                    VALUE H"42".                          300 0014
+   247     78 WM-FOCUSCHANGE                    VALUE H"43".                          300 0014
+   248     78 WM-SETBORDERSIZE                  VALUE H"44".                          300 0014
+   249     78 WM-TRACKFRAME                     VALUE H"45".                          300 0014
+   250     78 WM-MINMAXFRAME                    VALUE H"46".                          300 0014
+   251     78 WM-SETICON                        VALUE H"47".                          300 0014
+   252     78 WM-QUERYICON                      VALUE H"48".                          300 0014
+   253     78 WM-SETACCELTABLE                  VALUE H"49".                          300 0014
+   254     78 WM-QUERYACCELTABLE                VALUE H"4A".                          300 0014
+   255     78 WM-TRANSLATEACCEL                 VALUE H"4B".                          300 0014
+   256     78 WM-QUERYTRACKINFO                 VALUE H"4C".                          300 0014
+   257     78 WM-QUERYBORDERSIZE                VALUE H"4D".                          300 0014
+   258     78 WM-NEXTMENU                       VALUE H"4E".                          300 0014
+   259     78 WM-ERASEBACKGROUND                VALUE H"4F".                          300 0014
+   260     78 WM-QUERYFRAMEINFO                 VALUE H"50".                          300 0014
+   261     78 WM-QUERYFOCUSCHAIN                VALUE H"51".                          300 0014
+   262     78 WM-CALCFRAMERECT                  VALUE H"53".                          300 0014
+   263     78 WM-WINDOWPOSCHANGED               VALUE H"55".                          300 0014
+   264     78 WM-QUERYFRAMECTLCOUNT             VALUE H"59".                          300 0014
+   265     78 WM-QUERYHELPINFO                  VALUE H"5B".                          300 0014
+   266     78 WM-SETHELPINFO                    VALUE H"5C".                          300 0014
+   267     78 WM-ERROR                          VALUE H"5D".                          300 0014
+   268     78 WM-RENDERFMT                      VALUE H"60".                          300 0014
+   269     78 WM-RENDERALLFMTS                  VALUE H"61".                          300 0014
+   270     78 WM-DESTROYCLIPBOARD               VALUE H"62".                          300 0014
+   271     78 WM-PAINTCLIPBOARD                 VALUE H"63".                          300 0014
+   272     78 WM-SIZECLIPBOARD                  VALUE H"64".                          300 0014
+   273     78 WM-HSCROLLCLIPBOARD               VALUE H"65".                          300 0014
+   274     78 WM-VSCROLLCLIPBOARD               VALUE H"66".                          300 0014
+   275     78 WM-DRAWCLIPBOARD                  VALUE H"67".                          300 0014
+   276     78 WM-DDE-FIRST                      VALUE H"A0".                          300 0014
+   277     78 WM-DDE-INITIATE                   VALUE H"A0".                          300 0014
+   278     78 WM-DDE-REQUEST                    VALUE H"A1".                          300 0014
+   279     78 WM-DDE-ACK                        VALUE H"A2".                          300 0014
+   280     78 WM-DDE-DATA                       VALUE H"A3".                          300 0014
+   281     78 WM-DDE-ADVISE                     VALUE H"A4".                          300 0014
+   282     78 WM-DDE-UNADVISE                   VALUE H"A5".                          300 0014
+   283     78 WM-DDE-POKE                       VALUE H"A6".                          300 0014
+   284     78 WM-DDE-EXECUTE                    VALUE H"A7".                          300 0014
+   285     78 WM-DDE-TERMINATE                  VALUE H"A8".                          300 0014
+   286     78 WM-DDE-INITIATEACK                VALUE H"A9".                          300 0014
+   287     78 WM-DDE-LAST                       VALUE H"AF".                          300 0014
+   288     78 WM-QUERYCONVERTPOS                VALUE H"B0".                          300 0014
+*  289  copy "ws.78".                                                                 300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   6
+*                                   PMNEWUP.CBL (WS.78)
+   290*************************************************
+   291*  Constants Copy file: WS.78
+   292*************************************************
+   293     78 WS-VISIBLE                        VALUE H"80000000".                    300 0014
+   294     78 WS-DISABLED                       VALUE H"40000000".                    300 0014
+   295     78 WS-CLIPCHILDREN                   VALUE H"20000000".                    300 0014
+   296     78 WS-CLIPSIBLINGS                   VALUE H"10000000".                    300 0014
+   297     78 WS-PARENTCLIP                     VALUE H"08000000".                    300 0014
+   298     78 WS-SAVEBITS                       VALUE H"04000000".                    300 0014
+   299     78 WS-SYNCPAINT                      VALUE H"02000000".                    300 0014
+   300     78 WS-MINIMIZED                      VALUE H"01000000".                    300 0014
+   301     78 WS-MAXIMIZED                      VALUE H"800000".                      300 0014
+   302     78 WS-GROUP                          VALUE H"010000".                      300 0014
+   303     78 WS-TABSTOP                        VALUE H"020000".                      300 0014
+   304     78 WS-MULTISELECT                    VALUE H"040000".                      300 0014
+*  305  copy "vk.78".                                                                 300 0014
+   306*************************************************
+   307*  Constants Copy file: VK.78
+   308*************************************************
+   309     78 VK-BUTTON1                        VALUE H"01".                          300 0014
+   310     78 VK-BUTTON2                        VALUE H"02".                          300 0014
+   311     78 VK-BUTTON3                        VALUE H"03".                          300 0014
+   312     78 VK-BREAK                          VALUE H"04".                          300 0014
+   313     78 VK-BACKSPACE                      VALUE H"05".                          300 0014
+   314     78 VK-TAB                            VALUE H"06".                          300 0014
+   315     78 VK-BACKTAB                        VALUE H"07".                          300 0014
+   316     78 VK-NEWLINE                        VALUE H"08".                          300 0014
+   317     78 VK-SHIFT                          VALUE H"09".                          300 0014
+   318     78 VK-CTRL                           VALUE H"0A".                          300 0014
+   319     78 VK-ALT                            VALUE H"0B".                          300 0014
+   320     78 VK-ALTGRAF                        VALUE H"0C".                          300 0014
+   321     78 VK-PAUSE                          VALUE H"0D".                          300 0014
+   322     78 VK-CAPSLOCK                       VALUE H"0E".                          300 0014
+   323     78 VK-ESC                            VALUE H"0F".                          300 0014
+   324     78 VK-SPACE                          VALUE H"10".                          300 0014
+   325     78 VK-PAGEUP                         VALUE H"11".                          300 0014
+   326     78 VK-PAGEDOWN                       VALUE H"12".                          300 0014
+   327     78 VK-END                            VALUE H"13".                          300 0014
+   328     78 VK-HOME                           VALUE H"14".                          300 0014
+   329     78 VK-LEFT                           VALUE H"15".                          300 0014
+   330     78 VK-UP                             VALUE H"16".                          300 0014
+   331     78 VK-RIGHT                          VALUE H"17".                          300 0014
+   332     78 VK-DOWN                           VALUE H"18".                          300 0014
+   333     78 VK-PRINTSCRN                      VALUE H"19".                          300 0014
+   334     78 VK-INSERT                         VALUE H"1A".                          300 0014
+   335     78 VK-DELETE                         VALUE H"1B".                          300 0014
+   336     78 VK-SCRLLOCK                       VALUE H"1C".                          300 0014
+   337     78 VK-NUMLOCK                        VALUE H"1D".                          300 0014
+   338     78 VK-ENTER                          VALUE H"1E".                          300 0014
+   339     78 VK-SYSRQ                          VALUE H"1F".                          300 0014
+   340     78 VK-F1                             VALUE H"20".                          300 0014
+   341     78 VK-F2                             VALUE H"21".                          300 0014
+   342     78 VK-F3                             VALUE H"22".                          300 0014
+   343     78 VK-F4                             VALUE H"23".                          300 0014
+   344     78 VK-F5                             VALUE H"24".                          300 0014
+   345     78 VK-F6                             VALUE H"25".                          300 0014
+   346     78 VK-F7                             VALUE H"26".                          300 0014
+   347     78 VK-F8                             VALUE H"27".                          300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   7
+*                                   PMNEWUP.CBL (VK.78)
+   348     78 VK-F9                             VALUE H"28".                          300 0014
+   349     78 VK-F10                            VALUE H"29".                          300 0014
+   350     78 VK-F11                            VALUE H"2A".                          300 0014
+   351     78 VK-F12                            VALUE H"2B".                          300 0014
+   352     78 VK-F13                            VALUE H"2C".                          300 0014
+   353     78 VK-F14                            VALUE H"2D".                          300 0014
+   354     78 VK-F15                            VALUE H"2E".                          300 0014
+   355     78 VK-F16                            VALUE H"2F".                          300 0014
+   356     78 VK-F17                            VALUE H"30".                          300 0014
+   357     78 VK-F18                            VALUE H"31".                          300 0014
+   358     78 VK-F19                            VALUE H"32".                          300 0014
+   359     78 VK-F20                            VALUE H"33".                          300 0014
+   360     78 VK-F21                            VALUE H"34".                          300 0014
+   361     78 VK-F22                            VALUE H"35".                          300 0014
+   362     78 VK-F23                            VALUE H"36".                          300 0014
+   363     78 VK-F24                            VALUE H"37".                          300 0014
+   364     78 VK-MENU                           VALUE H"29".                          300 0014
+   365     78 VK-USERFIRST                      VALUE H"0100".                        300 0014
+   366     78 VK-USERLAST                       VALUE H"01FF".                        300 0014
+*  367  copy "qw.78".                                                                 300 0014
+   368*************************************************
+   369*  Constants Copy file: QW.78
+   370*************************************************
+   371     78 QW-NEXT                           VALUE 0.                              300 0014
+   372     78 QW-PREV                           VALUE 1.                              300 0014
+   373     78 QW-TOP                            VALUE 2.                              300 0014
+   374     78 QW-BOTTOM                         VALUE 3.                              300 0014
+   375     78 QW-OWNER                          VALUE 4.                              300 0014
+   376     78 QW-PARENT                         VALUE 5.                              300 0014
+   377     78 QW-NEXTTOP                        VALUE 6.                              300 0014
+   378     78 QW-PREVTOP                        VALUE 7.                              300 0014
+   379     78 QW-FRAMEOWNER                     VALUE 8.                              300 0014
+*  380  copy "swp.78".                                                                300 0014
+   381*************************************************
+   382*  Constants Copy file: SWP.78
+   383*************************************************
+   384     78 SWP-SIZE                          VALUE H"01".                          300 0014
+   385     78 SWP-MOVE                          VALUE H"02".                          300 0014
+   386     78 SWP-ZORDER                        VALUE H"04".                          300 0014
+   387     78 SWP-SHOW                          VALUE H"08".                          300 0014
+   388     78 SWP-HIDE                          VALUE H"10".                          300 0014
+   389     78 SWP-NOREDRAW                      VALUE H"20".                          300 0014
+   390     78 SWP-NOADJUST                      VALUE H"40".                          300 0014
+   391     78 SWP-ACTIVATE                      VALUE H"80".                          300 0014
+   392     78 SWP-DEACTIVATE                    VALUE H"0100".                        300 0014
+   393     78 SWP-EXTSTATECHANGE                VALUE H"0200".                        300 0014
+   394     78 SWP-MINIMIZE                      VALUE H"0400".                        300 0014
+   395     78 SWP-MAXIMIZE                      VALUE H"0800".                        300 0014
+   396     78 SWP-RESTORE                       VALUE H"1000".                        300 0014
+   397     78 SWP-FOCUSACTIVATE                 VALUE H"2000".                        300 0014
+   398     78 SWP-FOCUSDEACTIVATE               VALUE H"4000".                        300 0014
+*  399  copy "fid.78".                                                                300 0014
+   400*************************************************
+   401*  Constants Copy file: FID.78
+   402*************************************************
+   403     78 FID-SYSMENU                       VALUE H"8002".                        300 0014
+   404     78 FID-TITLEBAR                      VALUE H"8003".                        300 0014
+   405     78 FID-MINMAX                        VALUE H"8004".                        300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   8
+*                                  PMNEWUP.CBL (FID.78)
+   406     78 FID-MENU                          VALUE H"8005".                        300 0014
+   407     78 FID-VERTSCROLL                    VALUE H"8006".                        300 0014
+   408     78 FID-HORZSCROLL                    VALUE H"8007".                        300 0014
+   409     78 FID-CLIENT                        VALUE H"8008".                        300 0014
+   410     78 FID-DBE-APPSTAT                   VALUE H"8010".                        300 0014
+   411     78 FID-DBE-KBDSTAT                   VALUE H"8011".                        300 0014
+   412     78 FID-DBE-PECIC                     VALUE H"8012".                        300 0014
+   413     78 FID-DBE-KKPOPUP                   VALUE H"8013".                        300 0014
+*  414  copy "mbid.78".                                                               300 0014
+   415*************************************************
+   416*  Constants Copy file: MBID.78
+   417*************************************************
+   418     78 MBID-OK                           VALUE 1.                              300 0014
+   419     78 MBID-CANCEL                       VALUE 2.                              300 0014
+   420     78 MBID-ABORT                        VALUE 3.                              300 0014
+   421     78 MBID-RETRY                        VALUE 4.                              300 0014
+   422     78 MBID-IGNORE                       VALUE 5.                              300 0014
+   423     78 MBID-YES                          VALUE 6.                              300 0014
+   424     78 MBID-NO                           VALUE 7.                              300 0014
+   425     78 MBID-HELP                         VALUE 8.                              300 0014
+   426     78 MBID-ENTER                        VALUE 9.                              300 0014
+   427     78 MBID-ERROR                        VALUE H"FFFF".                        300 0014
+*  428  copy "hwnd.78".                                                               300 0014
+   429*************************************************
+   430*  Constants Copy file: HWND.78
+   431*************************************************
+   432     78 HWND-DESKTOP                      VALUE 1.                              300 0014
+   433     78 HWND-OBJECT                       VALUE 2.                              300 0014
+   434     78 HWND-TOP                          VALUE 3.                              300 0014
+   435     78 HWND-BOTTOM                       VALUE 4.                              300 0014
+   436     78 HWND-THREADCAPTURE                VALUE 5.                              300 0014
+   437     78 HWND-PARENT                       VALUE 0.                              300 0014
+*  438  copy "sptr.78".                                                               300 0014
+   439*************************************************
+   440*  Constants Copy file: SPTR.78
+   441*************************************************
+   442     78 SPTR-ARROW                        VALUE 1.                              300 0014
+   443     78 SPTR-TEXT                         VALUE 2.                              300 0014
+   444     78 SPTR-WAIT                         VALUE 3.                              300 0014
+   445     78 SPTR-SIZE                         VALUE 4.                              300 0014
+   446     78 SPTR-MOVE                         VALUE 5.                              300 0014
+   447     78 SPTR-SIZENWSE                     VALUE 6.                              300 0014
+   448     78 SPTR-SIZENESW                     VALUE 7.                              300 0014
+   449     78 SPTR-SIZEWE                       VALUE 8.                              300 0014
+   450     78 SPTR-SIZENS                       VALUE 9.                              300 0014
+   451     78 SPTR-APPICON                      VALUE 10.                             300 0014
+   452     78 SPTR-ICONINFORMATION              VALUE 11.                             300 0014
+   453     78 SPTR-ICONQUESTION                 VALUE 12.                             300 0014
+   454     78 SPTR-ICONERROR                    VALUE 13.                             300 0014
+   455     78 SPTR-ICONWARNING                  VALUE 14.                             300 0014
+   456     78 SPTR-CPTR                         VALUE 14.                             300 0014
+   457     78 SPTR-ILLEGAL                      VALUE 18.                             300 0014
+   458     78 SPTR-FILE                         VALUE 19.                             300 0014
+   459     78 SPTR-FOLDER                       VALUE 20.                             300 0014
+   460     78 SPTR-MULTFILE                     VALUE 21.                             300 0014
+   461     78 SPTR-PROGRAM                      VALUE 22.                             300 0014
+   462     78 SPTR-HANDICON                     VALUE 13.                             300 0014
+   463     78 SPTR-QUESICON                     VALUE 12.                             300 0014
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page   9
+*                                  PMNEWUP.CBL (SPTR.78)
+   464     78 SPTR-BANGICON                     VALUE 14.                             300 0014
+   465     78 SPTR-NOTEICON                     VALUE 11.                             300 0014
+*  466  copy "cursor.78".                                                             300 0014
+   467*************************************************
+   468*  Constants Copy file: CURSOR.78
+   469*************************************************
+   470     78 CURSOR-SOLID                      VALUE 0.                              300 0014
+   471     78 CURSOR-HALFTONE                   VALUE H"01".                          300 0014
+   472     78 CURSOR-FRAME                      VALUE H"02".                          300 0014
+   473     78 CURSOR-FLASH                      VALUE H"04".                          300 0014
+   474     78 CURSOR-SETPOS                     VALUE H"8000".                        300 0014
+   475                                                                                300 0014
+   476****************************************************************
+*  477  copy "pmnewup.cpy".                                                           300 0014
+   478 78 ID-RESOURCE    VALUE 1.                                                     300 0014
+   479                                                                                300 0014
+   480 78 IDM-FILE       VALUE 1.                                                     300 0014
+   481 78 IDM-TOPEXIT    VALUE 2.                                                     300 0014
+   482 78 IDM-HELP       VALUE 3.                                                     300 0014
+   483                                                                                300 0014
+   484 78 IDM-READ       VALUE 10.                                                    300 0014
+   485 78 IDM-DELETE     VALUE 11.                                                    300 0014
+   486 78 IDM-WRITE      VALUE 12.                                                    300 0014
+   487 78 IDM-REWRITE    VALUE 13.                                                    300 0014
+   488 78 IDM-PREVIOUS   VALUE 14.                                                    300 0014
+   489 78 IDM-NEXT       VALUE 15.                                                    300 0014
+   490 78 IDM-CLEAR      VALUE 16.                                                    300 0014
+   491                                                                                300 0014
+   492 78 IDM-EXIT       VALUE 40.                                                    300 0014
+   493 78 IDM-RESUME     VALUE 41.                                                    300 0014
+   494****************************************************************
+   495  78  object-id-1         value 999.                                            300 0014
+   496  78  object-id-2         value 998.                                            300 0014
+   497  78  object-id-3         value 997.                                            300 0014
+   498  78  object-id-4         value 996.                                            300 0014
+   499                                                                                300 0014
+   500  77  MY-MB               pic 9(4) comp-5.                                      300 0015 00
+   501  77  object-flag         pic 99 comp-5 value 0.                                308 0016 01
+   502  77  msg-box-answer      pic 9(4) comp-5.                                      310 0017 02
+   503                                                                                312 0017 02
+   504  01  file-status         pic xx.                                               318 0017 02
+   505                                                                                318 0018 03
+   506  01  entry-field-contents.                                                     320 0019 04
+   507                                                                                320 0019 04
+   508    78 field-1-start value NEXT.                                                320 0019 04
+   509      03 entry-field-1         pic x(5).                                        320 0019 04
+   510    78 size-of-field-1 value NEXT - field-1-start.                              325 0019 04
+   511                                                                                325 0019 04
+   512      03 filler                pic x value x"00".                               325 0019 04
+   513                                                                                325 001A 05
+   514    78 field-2-start value NEXT.                                                326
+   515      03 entry-field-2         pic 9(4).                                        326 001A 05
+   516    78 size-of-field-2 value NEXT - field-2-start.                              32A 001A 05
+   517      03 entry-field-2-x redefines entry-field-2 pic x(4).                      32A 001A 05
+   518                                                                                326 001A 05
+   519      03 filler                pic x value x"00".                               32A 001A 05
+   520                                                                                32A 001B 06
+   521    78 field-3-start value NEXT.                                                32B
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  10
+*                                     PMNEWUP.CBL
+   522      03 entry-field-3         pic x(20).                                       32B 001B 06
+   523    78 size-of-field-3 value NEXT - field-3-start.                              33F 001B 06
+   524                                                                                33F 001B 06
+   525      03 filler                pic x value x"00".                               33F 001B 06
+   526                                                                                33F 001C 07
+   527    78 field-4-start value NEXT.                                                340
+   528      03 entry-field-4         pic x(20).                                       340 001C 07
+   529    78 size-of-field-4 value NEXT - field-4-start.                              354 001C 07
+   530      03 filler                pic x value x"00".                               354 001C 07
+   531                                                                                354 001D 08
+   532  78 valid-new-msg         value "Record written..........".                    355
+   533  78 valid-load-msg        value "Record read.............".                    355
+   534  78 valid-delete-msg      value "Record deleted..........".                    355
+   535  78 valid-overwrite-msg   value "Record rewritten........".                    355
+   536  78 not-deleted-msg       value "Record not deleted......".                    355
+   537                                                                                355
+   538  78 invalid-new-msg       value "ERROR: Record exists..........".              355
+   539  78 invalid-load-msg      value "ERROR: Record not found.......".              355
+   540  78 invalid-delete-msg    value "ERROR: Record not present.....".              355
+   541  78 invalid-overwrite-msg value "ERROR: Record not present.....".              355
+   542  78 invalid-key-msg       value "ERROR: Record key empty.......".              355
+   543                                                                                355
+   544  78 delete-msg-confirm    value "Delete. Are you sure?".                       355
+   545                                                                                355
+   546  01 No-help-yet-message.                                                       358 001D 08
+   547     03   pic x(42)                                                             358 001D 08
+   548        value "This program is written using Micro Focus ".                     358 001D 08
+   549     03   pic x(40)                                                             382
+   550        value "COBOL/2. The source for this program is ".                       382 001E 09
+   551     03   pic x(42)                                                             3AA
+   552        value "available in the program PMNEWUP.CBL. The ".                     3AA 001E 09
+   553     03   pic x(40)                                                             3D4
+   554        value "program was written by B J Edwards.".                            3D4 001E 09
+   555     03   pic x     value x"00".                                                3FC
+   556                                                                                3FC 001E 09
+   557  01  end-message.                                                              400 001E 09
+   558     03   pic x(40) value "Do you really want to end?".                         400 001E 09
+   559     03   pic x     value x"00".                                                428
+   560                                                                                428 001F 0A
+   561  78 no-numerics-msg       value "Numeric Characters not allowed".              429
+   562  78 numerics-only-msg     value "Numeric Characters only".                     429
+   563                                                                                429
+   564  01  work-data.                                                                430 001F 0A
+   565      03 hab                 pic 9(9) comp-5.                                   430 001F 0A
+   566      03 hmq                 pic 9(9) comp-5.                                   434 0020 0B
+   567      03 hwndClient          pic 9(9) comp-5.                                   438 0021 0C
+   568      03 hwndFrame           pic 9(9) comp-5.                                   43C 0022 0D
+   569      03 hwndParent          pic 9(9) comp-5.                                   440 0023 0E
+   570      03 hwndMenu            pic 9(9) comp-5.                                   444 0024 0F
+   571      03 hwndEntryField      pic xxxx comp-5.                                   448 0025 10
+   572      03 hwndEntryField-1    pic xxxx comp-5.                                   44C 0026 11
+   573      03 hwndEntryField-2    pic xxxx comp-5.                                   450 0027 12
+   574      03 hwndEntryField-3    pic xxxx comp-5.                                   454 0028 13
+   575      03 hwndEntryField-4    pic xxxx comp-5.                                   458 0029 14
+   576      03 nullText            pic x  value x"00".                                45C 002A 15
+   577      03 ClientWndProc       procedure-pointer.                                 45D 002A 15
+   578      03 temp-long           pic 9(9) comp-5.                                   461 002C 17
+   579      03 EntryFieldWinProc  redefines temp-long procedure-pointer.              461 002C 17
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  11
+*                                     PMNEWUP.CBL
+   580      03 DefEntryFieldWinProc                                                   461 002C 17
+   581                   REDEFINES temp-long procedure-pointer.                       461 002C 17
+   582      03 qmsg.                                                                  465 002D 18
+   583         05  qmsghwnd        pic 9(9) comp-5.                                   465 002D 18
+   584         05  qmsgmsg         pic 9(4) comp-5.                                   469 002E 19
+   585         05  qmsgmp1         pic 9(9) comp-5.                                   46B 002F 1A
+   586         05  qmsgmp2         pic 9(9) comp-5.                                   46F 0030 1B
+   587         05  qmsgtime        pic 9(9) comp-5.                                   473 0031 1C
+   588         05  qmsgptl.                                                           477 0032 1D
+   589             07  qmsgptlx    pic 9(9) comp-5.                                   477 0032 1D
+   590             07  qmsgptly    pic 9(9) comp-5.                                   47B 0033 1E
+   591      03 loop-flag           pic x value 'C'.                                   47F 0034 1F
+   592         88  loop-end            value 'E'.                                     480 0034 1F
+   593      03 bool                pic 9(4) comp-5.                                   480 0035 20
+   594         88  boolTRUE            value 1.                                       482 0035 20
+   595         88  boolFALSE           value 0.                                       482 0035 20
+   596                                                                                482 0035 20
+   597      03  flFrameFlags        pic 9(9) comp-5.                                  482 0036 21
+   598      03  winStyle            pic 9(9) comp-5.                                  486 0037 22
+   599      03  szClientClass       pic x(10) value 'FileUpdate'.                     48A 0038 23
+   600      03  filler              pic x    value x"00".                             494 0039 24
+   601      03  sFlag               pic 9(4)  comp-5.                                 495 0039 24
+   602      03  temp-num1           pic 9(4)  comp-5.                                 497 003A 25
+   603      03  temp-num2           pic 9(4)  comp-5.                                 499 003B 26
+   604    78  screen-message-start value NEXT.                                        49B 003B 26
+   605      03  screen-message       pic x(32).                                       49B 003C 27
+   606    78  size-of-message-line value NEXT - screen-message-start.                 4BB 003C 27
+   607                                                                                4BB 003C 27
+   608 01  workarea.                                                                  4C0 003D 28
+   609      03  temp-word       pic xx   comp-5.                                      4C0 003D 28
+   610      03  REDEFINES temp-word.                                                  4C0 003D 28
+   611          05 temp-ls      pic x   comp-5.                                       4C0 003D 28
+   612          05 temp-ms      pic x   comp-5.                                       4C1 003E 29
+   613                                                                                4C2 003E 29
+   614 01  field-coords.                                                              4C8 003F 2A
+   615     03  x           pic s9(4) comp-5.                                          4C8 003F 2A
+   616     03  y           pic s9(4) comp-5.                                          4CA 0040 2B
+   617                                                                                4CC 0040 2B
+   618 01  short-vars.                                                                4D0 0041 2C
+   619     03  cxChar      pic s9(4) comp-5.                                          4D0 0041 2C
+   620     03  cxCaps      pic s9(4) comp-5.                                          4D2 0042 2D
+   621     03  cyChar      pic s9(4) comp-5.                                          4D4 0043 2E
+   622     03  cyDesc      pic s9(4) comp-5.                                          4D6 0044 2F
+   623     03  cxClient    pic s9(4) comp-5.                                          4D8 0045 30
+   624     03  cyClient    pic s9(4) comp-5.                                          4DA 0046 31
+   625                                                                                4DC 0046 31
+   626 01  mp3                 pic xxxx comp-5.                                       4E0 0047 32
+   627 01  redefines mp3.                                                             4E0 0047 32
+   628     03  mp3w1           pic xx   comp-5.                                       4E0 0047 32
+   629     03  mp3w2           pic xx   comp-5.                                       4E2 0048 33
+   630                                                                                4E4 0048 33
+   631 01  hdr1-line.                                                                 4E8 0049 34
+   632   78 hdr1-line-start value NEXT.                                               4E8 0049 34
+   633     03                     pic x(65) value                                     4E8 0049 34
+   634                 "Simple Presentation Manager, COBOL Indexed File,              4E8 0049 34
+   635-                " update program".                                             4E8 0049 34
+   636   78 size-of-hdr1-line value NEXT - hdr1-line-start.                           529
+   637     03                     pic x value x"00".                                  529
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  12
+*                                     PMNEWUP.CBL
+   638                                                                                529 004A 35
+   639 01 Character-bits.                                                             530 004A 35
+   640      03  ACTUAL-KC-INVALIDCHAR    pic 9.                                       530 004A 35
+   641      03  ACTUAL-KC-TOGGLE         pic 9.                                       531 004B 36
+   642      03  ACTUAL-KC-INVALIDCOMP    pic 9.                                       532 004C 37
+   643      03  ACTUAL-KC-COMPOSITE      pic 9.                                       533 004D 38
+   644      03  ACTUAL-KC-DEADKEY        pic 9.                                       534 004E 39
+   645      03  ACTUAL-KC-LONEKEY        pic 9.                                       535 004F 3A
+   646      03  ACTUAL-KC-PREVDOWN       pic 9.                                       536 0050 3B
+   647      03  ACTUAL-KC-KEYUP          pic 9.                                       537 0051 3C
+   648      03  ACTUAL-KC-ALT            pic 9.                                       538 0052 3D
+   649      03  ACTUAL-KC-CTRL           pic 9.                                       539 0053 3E
+   650      03  ACTUAL-KC-SHIFT          pic 9.                                       53A 0054 3F
+   651      03  ACTUAL-KC-SCANCODE       pic 9.                                       53B 0055 40
+   652      03  ACTUAL-KC-VIRTUALKEY     pic 9.                                       53C 0056 41
+   653      03  ACTUAL-KC-CHAR           pic 9.                                       53D 0056 41
+   654                                                                                53D 0056 41
+   655                                                                                53D 0056 41
+   656*---------------------------------------------------------*
+   657  local-storage section.                                                          0 0058 43
+   658                                                                                  0 0058 43
+   659  01  hps                 pic x(4) comp-5.                                        0 0059 44
+   660                                                                                  4 0059 44
+   661  01  swp.                                                                        8 005A 45
+   662      03                  PIC 9(4) COMP-5.                                        8 005A 45
+   663      03 win-size.                                                                A 005B 46
+   664         05  sxLeft          pic x(2) comp-5.                                     A 005B 46
+   665         05  syBottom        pic x(2) comp-5.                                     C 005C 47
+   666         05  sxRight         pic x(2) comp-5.                                     E 005D 48
+   667         05  syTop           pic x(2) comp-5.                                    10 005E 49
+   668      03                     PIC 9(9) COMP-5.                                    12 005F 4A
+   669      03                     PIC 9(9) COMP-5.                                    16 005F 4A
+   670                                                                                 1A 005F 4A
+   671  01 ptl.                                                                        20 005F 4A
+   672      03  x       pic s9(9) comp-5.                                              20 005F 4A
+   673      03  y       pic s9(9) comp-5.                                              24 0060 4B
+   674                                                                                 28 0060 4B
+*  675      copy "RECTL.CPY".                                                          28 0060 4B
+   676     03 RECTL.                                                                   28 0061 4C
+   677      05 RECTL-xLeft                      PIC S9(9) COMP-5.                      28 0061 4C
+   678      05 RECTL-yBottom                    PIC S9(9) COMP-5.                      2C 0062 4D
+   679      05 RECTL-xRight                     PIC S9(9) COMP-5.                      30 0063 4E
+   680      05 RECTL-yTop                       PIC S9(9) COMP-5.                      34 0064 4F
+   681                                                                                 38 0064 4F
+   682  01  mresult             pic x(4) comp-5.                                       38 0065 50
+   683                                                                                 3C 0065 50
+   684*---------------------------------------------------------*
+   685 linkage section.                                                               540 0065 50
+   686 01  hwnd                pic xxxx comp-5.                                         0 0066 51
+   687 01  msg                 pic xx   comp-5.                                         0 0067 52
+   688                                                                                  2 0067 52
+   689 01  mp1                 pic xxxx comp-5.                                         0 0068 53
+   690 01  redefines mp1.                                                               0 0068 53
+   691     03  mp1w1           pic xx   comp-5.                                         0 0068 53
+   692     03  mp1w2           pic xx   comp-5.                                         2 0069 54
+   693 01  redefines mp1.                                                               0 0068 53
+   694     03 fs               pic 9(4)  comp-5.                                        0 0068 53
+   695     03 cRepeat          pic 99   comp-5.                                         2 0069 54
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  13
+*                                     PMNEWUP.CBL
+   696     03 scancode         pic 99   comp-5.                                         3 006A 55
+   697     03 scancode-x   redefines scancode pic x.                                    4 006A 55
+   698                                                                                  3 006A 55
+   699 01  mp2                 pic xxxx comp-5.                                         0 006B 56
+   700 01  redefines mp2.                                                               0 006B 56
+   701     03  mp2w1           pic xx   comp-5.                                         0 006B 56
+   702     03  mp2w2           pic xx   comp-5.                                         2 006C 57
+   703 01  redefines mp2.                                                               0 006B 56
+   704     03 chr              pic 9(4)  comp-5.                                        0 006B 56
+   705     03 chr-x        redefines chr                                                2 006B 56
+   706                         pic xx.                                                  0 006B 56
+   707     03 vKey             pic 9(4)  comp-5.                                        2 006C 57
+   708                                                                                  4 006C 57
+   709*---------------------------------------------------------*
+   710  procedure division OS2API.                                                      0
+   711  main section.                                                                  31 0005
+   712     perform start-up                                                            33
+   713     perform register-classes                                                    36
+   714     if boolTRUE                                                                 39
+   715         perform open-file                                                       40
+   716         perform create-client-window                                            43
+   717         perform set-data-entry-first-field                                      46
+   718         if hwndFrame not = 0                                                    49
+   719              perform message-loop until loop-end                                50
+   720         end-if                                                                  5C
+   721         close PmFile                                                            5D
+   722     end-if                                                                      78
+   723     perform shut-down                                                           79
+   724     stop run.                                                                   7C
+   725                                                                                 7D
+   726*---------------------------------------------------------*
+   727 start-up section.                                                               80 0006
+   728     perform set-procedure-entry-point                                           82
+   729     call OS2API 'WinInitialize'                                                 85
+   730                 using   by value 0 size 2                                       85
+   731                 returning hab                                                   85
+   732                                                                                 85
+   733     call OS2API 'WinCreateMsgQueue'                                             97
+   734                 using by value hab                                              97
+   735                       by value 0 size 2                                         97
+   736                 returning hmq.                                                  AE
+   737                                                                                 AE
+   738*---------------------------------------------------------*
+   739 set-procedure-entry-point section.                                              B1 000D
+   740     set ClientWndProc to ENTRY 'ClientWndProc'.                                 B3
+   741                                                                                 C5
+   742*---------------------------------------------------------*
+   743 register-classes section.                                                       C8 0007
+   744     call OS2API 'WinRegisterClass'                                              CA
+   745                 using by value     hab                                          CA
+   746                       by reference szClientClass                                CA
+   747                       by value     ClientWndProc                                CA
+   748                       by value     CS-SIZEREDRAW size 4                         CA
+   749                       by value     0        size 2                              CA
+   750                 returning bool.                                                 F0
+   751                                                                                 F0
+   752*---------------------------------------------------------*
+   753 message-loop section.                                                           F3 000B
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  14
+*                                     PMNEWUP.CBL
+   754     call OS2API 'WinGetMsg'                                                     F5
+   755                   using   by value hab                                          F5
+   756                           by reference qmsg                                     F5
+   757                           by value 0            size 4                          F5
+   758                           by value 0            size 2                          F5
+   759                           by value 0            size 2                          F5
+   760                   returning bool                                                F5
+   761                                                                                 F5
+   762     if boolFALSE                                                               11C
+   763          add MB-YESNOCANCEL MB-ICONQUESTION giving MY-MB                       123
+   764          call OS2API 'WinMessageBox'                                           12F
+   765                using by value HWND-DESKTOP size 4                              12F
+   766                      by value hwndClient                                       12F
+   767                      by reference end-message                                  12F
+   768                      by reference szClientClass                                12F
+   769                      by value 0 size 2                                         12F
+   770                      by value MY-MB                                            12F
+   771                returning msg-box-answer                                        12F
+   772          if msg-box-answer = MBID-YES                                          15B
+   773              set loop-end to true                                              162
+   774          else                                                                  165
+   775              call OS2API 'WinCancelShutdown'                                   166
+   776                   using by value hmq                                           166
+   777                         by value 0 size 2                                      166
+   778          end-if                                                                179
+   779     else                                                                       17A
+   780          call OS2API 'WinDispatchMsg'                                          17B
+   781                   using by value hab                                           17B
+   782                         by reference qmsg                                      17B
+   783     end-if.                                                                    18E
+   784*---------------------------------------------------------*
+   785 shut-down section.                                                             192 000C
+   786     call OS2API 'WinDestroyWindow'   using by value hwndFrame                  194
+   787     call OS2API 'WinDestroyMsgQueue' using by value hmq                        1A3
+   788     call OS2API 'WinTerminate'       using by value hab.                       1B2
+   789*---------------------------------------------------------*
+   790 create-client-window section.                                                  1C4 0009
+   791     compute flFrameFlags = FCF-TITLEBAR   + FCF-SYSMENU                        1C6
+   792                          + FCF-SIZEBORDER + FCF-MINBUTTON                      1C6
+   793                          + FCF-MAXBUTTON  + FCF-SHELLPOSITION                  1C6
+   794                          + FCF-TASKLIST   + FCF-MENU                           1C6
+   795                          + FCF-ACCELTABLE + FCF-ICON                           1C6
+   796                                                                                1C6
+   797     call OS2API 'WinCreateStdWindow'                                           201
+   798                      using by value     HWND-DESKTOP size 4                    201
+   799                            by value     WS-VISIBLE size 4                      201
+   800                            by reference flFrameFlags                           201
+   801                            by reference szClientClass                          201
+   802                            by reference nulltext                               201
+   803                            by value     0        size 4                        201
+   804                            by value     0        size 2                        201
+   805                            by value     ID-RESOURCE  size 2                    201
+   806                            by reference hwndClient                             201
+   807                      returning hwndFrame                                       201
+   808                                                                                201
+   809     call OS2API 'WinQueryWindowPos'                                            240
+   810                    using   by value hwndFrame                                  240
+   811                            by reference swp                                    240
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  15
+*                                     PMNEWUP.CBL
+   812                    returning bool                                              240
+   813                                                                                240
+   814     call OS2API 'WinSetWindowPos'                                              257
+   815                          using by value hwndFrame                              257
+   816                                by value HWND-TOP size 4                        257
+   817                                by value 0        size 2                        257
+   818                                by value 0        size 2                        257
+   819                                by value 0        size 2                        257
+   820                                by value 0        size 2                        257
+   821                                by value SWP-ACTIVATE size 2.                   257
+   822                                                                                257
+   823*---------------------------------------------------------------*
+   824 set-data-entry-first-field section.                                            289 000A
+   825     call OS2API 'WinSetFocus'                                                  28B
+   826                    using by value HWND-DESKTOP size 4                          28B
+   827                          by value hwndEntryField-1.                            2A1
+   828*---------------------------------------------------------------
+   829  MyWndProc-S section.                                                          2A4 000E
+   830  entry 'ClientWndProc' using by value hwnd                                     2A6
+   831                        by value msg                                            2A6
+   832                        by value mp1                                            2A6
+   833                        by value mp2.                                           2AD
+   834                                                                                2AD
+   835      move 0 to mresult                                                         2AD
+   836      evaluate msg                                                              2B3
+   837                                                                                2B3
+   838         when WM-CREATE                                                         2B3
+   839                                                                                2B3
+   840             perform WM-CREATE-routine                                          2BA
+   841                                                                                2BA
+   842         when WM-PAINT                                                          2BD
+   843                                                                                2BD
+   844             perform WM-PAINT-routine                                           2C6
+   845                                                                                2C6
+   846         when WM-SIZE                                                           2C9
+   847                                                                                2C9
+   848             perform WM-SIZE-routine                                            2D1
+   849                                                                                2D1
+   850         when WM-CONTROL                                                        2D4
+   851                                                                                2D4
+   852             perform WM-CONTROL-routine                                         2DD
+   853                                                                                2DD
+   854         when WM-COMMAND                                                        2E0
+   855                                                                                2E0
+   856             perform WM-COMMAND-routine                                         2E9
+   857                                                                                2E9
+   858         when WM-HELP                                                           2EC
+   859             perform WM-HELP-routine                                            2F5
+   860                                                                                2F5
+   861         when OTHER                                                             2F8
+   862             PERFORM Call-Default-WinProc                                       2F9
+   863                                                                                2F9
+   864      end-evaluate                                                              2FC
+   865      exit program returning mresult.                                           302
+   866                                                                                306
+   867*-----------------------------------------------------------------
+   868 WM-CREATE-routine section.                                                     309 000F
+   869     call OS2API 'WinQueryWindow'                                               30B
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  16
+*                                     PMNEWUP.CBL
+   870                    using by value hwnd                                         30B
+   871                          by value QW-PARENT size 2                             30B
+   872                          by value 0 size 2                                     30B
+   873                    returning hwndParent                                        30B
+   874                                                                                30B
+   875     call OS2API 'WinWindowFromID'                                              328
+   876                    using by value hwndParent                                   328
+   877                          by value FID-MENU size 2                              328
+   878                    returning hwndMenu                                          328
+   879                                                                                328
+   880     move low-values to entry-field-contents                                    340
+   881*    move 0 to entry-field-2
+   882     move spaces to screen-message                                              346
+   883     move 0 to mResult.                                                         34B
+   884*-----------------------------------------------------------------
+   885 WM-PAINT-routine section.                                                      354 0010
+   886     call OS2API 'WinBeginPaint'                                                356
+   887                          using by value hwnd                                   356
+   888                                by value 0 size 4                               356
+   889                                by value 0 size 4                               356
+   890                          returning hps                                         356
+   891                                                                                356
+   892     call OS2API 'GpiErase'                                                     377
+   893                          using by value hps                                    377
+   894                                                                                377
+   895     move 0   to x of ptl                                                       386
+   896     compute y of ptl = cyClient - 15                                           38C
+   897                                                                                38C
+   898     call OS2API 'GpiCharStringAt'                                              399
+   899                          using by value hps                                    399
+   900                                by reference ptl                                399
+   901                                by value size-of-hdr1-line                      399
+   902                                by reference hdr1-line                          399
+   903                                                                                399
+   904     compute x of ptl = cxClient / 5                                            3B8
+   905     compute y of ptl = cyClient / 2 + 20                                       3C4
+   906                                                                                3C5
+   907     call OS2API 'GpiCharStringAt'                                              3D6
+   908                          using by value hps                                    3D6
+   909                                by reference ptl                                3D6
+   910                                by value 10 size 4                              3D6
+   911                                by reference "Record Key"                       3D6
+   912                                                                                3D6
+   913     compute x of ptl = (cxClient / 5) * 3                                      402
+   914     compute y of ptl = cyClient / 2 + 20                                       412
+   915                                                                                413
+   916     call OS2API 'GpiCharStringAt'                                              424
+   917                          using by value hps                                    424
+   918                                by reference ptl                                424
+   919                                by value 14 size 4                              424
+   920                                by reference "Data Field 1"                     424
+   921                                                                                424
+   922     compute x of ptl = cxClient / 5                                            452
+   923     compute y of ptl = cyClient / 4 + 20                                       45E
+   924                                                                                45F
+   925     call OS2API 'GpiCharStringAt'                                              470
+   926                          using by value hps                                    470
+   927                                by reference ptl                                470
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  17
+*                                     PMNEWUP.CBL
+   928                                by value 14 size 4                              470
+   929                                by reference "Data Field 2"                     470
+   930                                                                                470
+   931     compute x of ptl = (cxClient / 5) * 3                                      49E
+   932     compute y of ptl = cyClient / 4 + 20                                       4AE
+   933                                                                                4AF
+   934     call OS2API 'GpiCharStringAt'                                              4C0
+   935                          using by value hps                                    4C0
+   936                                by reference ptl                                4C0
+   937                                by value 14 size 4                              4C0
+   938                                by reference "Data Field 3"                     4C0
+   939                                                                                4C0
+   940     move 1  to x of ptl                                                        4EE
+   941     move 20 to y of ptl                                                        4F4
+   942                                                                                4F4
+   943     call OS2API 'GpiCharStringAt'                                              4FB
+   944                          using by value hps                                    4FB
+   945                                by reference ptl                                4FB
+   946                                by value size-of-message-line                   4FB
+   947                                by reference screen-message                     4FB
+   948                                                                                4FB
+   949     call OS2API 'WinEndPaint' using by value hps                               519
+   950     move 0 to mResult.                                                         528
+   951*-----------------------------------------------------------------
+   952 WM-SIZE-routine section.                                                       531 0011
+   953     move mp2w1 to cxClient                                                     533
+   954     move mp2w2 to cyClient                                                     53A
+   955     if hwndEntryField-1 not = 0                                                541
+   956         PERFORM get-screen-contents                                            548
+   957         PERFORM Destroy-Entry-Fields                                           54B
+   958     end-if                                                                     54E
+   959     PERFORM Create-Entry-Fields                                                54F
+   960     move 0 to mResult.                                                         552
+   961*-----------------------------------------------------------------
+   962 WM-CONTROL-routine section.                                                    55B 0012
+   963     IF  mp2 = hwndClient OR hwndFrame                                          55D
+   964         PERFORM Call-Default-WinProc                                           56F
+   965     ELSE                                                                       572
+   966         EVALUATE mp1w2                                                         573
+   967            WHEN EN-KILLFOCUS                                                   573
+   968                perform kill-focus                                              57A
+   969            WHEN EN-SETFOCUS                                                    57D
+   970                set EntryFieldWinProc to ENTRY 'EWndProc'                       585
+   971                EVALUATE mp1w1                                                  592
+   972                   WHEN object-id-1                                             592
+   973                      perform set-focus-1                                       59B
+   974                   WHEN object-id-2                                             59E
+   975                      perform set-focus-2                                       5A8
+   976                   WHEN object-id-3                                             5AB
+   977                      perform set-focus-3                                       5B5
+   978                   WHEN object-id-4                                             5B8
+   979                      perform set-focus-4                                       5C2
+   980                END-EVALUATE                                                    5C5
+   981                PERFORM Call-Default-WinProc                                    5C9
+   982         END-EVALUATE                                                           5CC
+   983     END-IF.                                                                    5CE
+   984*-----------------------------------------------------------------
+   985 WM-COMMAND-routine section.                                                    5D2 0013
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  18
+*                                     PMNEWUP.CBL
+   986     evaluate mp1w1                                                             5D4
+   987         when IDM-READ                                                          5D4
+   988             perform load-record                                                5DC
+   989         when IDM-DELETE                                                        5DF
+   990             perform delete-record                                              5E8
+   991         when IDM-WRITE                                                         5EB
+   992             perform save-new-record                                            5F4
+   993         when IDM-REWRITE                                                       5F7
+   994             perform overwrite-record                                           600
+   995         when IDM-PREVIOUS                                                      603
+   996             perform read-previous                                              60C
+   997         when IDM-NEXT                                                          60F
+   998             perform read-next                                                  618
+   999         when IDM-CLEAR                                                         61B
+  1000             perform clear-record                                               624
+  1001         when IDM-EXIT                                                          627
+  1002             call OS2API 'WinSendMsg'                                           630
+  1003                using by value hwnd                                             630
+  1004                      by value WM-CLOSE size 2                                  630
+  1005                      by value 0        size 4                                  630
+  1006                      by value 0        size 4                                  630
+  1007                                                                                630
+  1008     end-evaluate                                                               652
+  1009     move 0 to mresult.                                                         65A
+  1010*-----------------------------------------------------------------
+  1011 WM-HELP-routine section.                                                       663 0014
+  1012     add MB-OK MB-ICONEXCLAMATION giving MY-MB                                  665
+  1013     call OS2API 'WinMessageBox'using                                           671
+  1014           by value HWND-DESKTOP size 4                                         671
+  1015           by value hwnd                                                        671
+  1016           by reference No-help-yet-message                                     671
+  1017           by reference szClientClass                                           671
+  1018           by value 0 size 2                                                    671
+  1019           by value MY-MB                                                       671
+  1020     move 0 to mresult.                                                         699
+  1021*---------------------------------------------------------------*
+  1022 Confirm-delete-routine section.                                                6A2 0025
+  1023     add MB-YESNO MB-ICONEXCLAMATION giving MY-MB                               6A4
+  1024     call OS2API 'WinMessageBox' using                                          6B0
+  1025           by value HWND-DESKTOP size 4                                         6B0
+  1026           by value hwnd                                                        6B0
+  1027           by reference delete-msg-confirm                                      6B0
+  1028           by reference szClientClass                                           6B0
+  1029           by value 0 size 2                                                    6B0
+  1030           by value MY-MB                                                       6B0
+  1031       returning msg-box-answer.                                                6F4
+  1032*---------------------------------------------------------------*
+  1033 process-virtual-keys section.                                                  6F7 0026
+  1034     evaluate vKey                                                              6F9
+  1035         when VK-TAB                                                            6F9
+  1036            perform skip-next-field                                             700
+  1037         when VK-BACKTAB                                                        703
+  1038            perform skip-previous-field                                         70B
+  1039         when other                                                             70E
+  1040            PERFORM Call-Default-EntryFieldWinProc                              70F
+  1041     end-evaluate.                                                              712
+  1042*---------------------------------------------------------------*
+  1043 skip-next-field section.                                                       717 0027
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  19
+*                                     PMNEWUP.CBL
+  1044     if object-flag not = 0                                                     719
+  1045         evaluate object-flag                                                   720
+  1046             when 1                                                             720
+  1047                 move hwndEntryField-2 to hwndEntryField                        727
+  1048             when 2                                                             72E
+  1049                 move hwndEntryField-3 to hwndEntryField                        736
+  1050             when 3                                                             73D
+  1051                 move hwndEntryField-4 to hwndEntryField                        745
+  1052             when 4                                                             74C
+  1053                 move hwndEntryField-1 to hwndEntryField                        754
+  1054         end-evaluate                                                           75B
+  1055         call OS2API 'WinSetFocus'                                              75F
+  1056                using by value HWND-DESKTOP size 4                              75F
+  1057                      by value hwndEntryField                                   75F
+  1058     end-if.                                                                    775
+  1059*---------------------------------------------------------------*
+  1060 skip-previous-field section.                                                   779 0028
+  1061     if object-flag not = 0                                                     77B
+  1062         evaluate object-flag                                                   782
+  1063             when 1                                                             782
+  1064                 move hwndEntryField-4 to hwndEntryField                        789
+  1065             when 2                                                             790
+  1066                 move hwndEntryField-1 to hwndEntryField                        798
+  1067             when 3                                                             79F
+  1068                 move hwndEntryField-2 to hwndEntryField                        7A7
+  1069             when 4                                                             7AE
+  1070                 move hwndEntryField-3 to hwndEntryField                        7B6
+  1071         end-evaluate                                                           7BD
+  1072         call OS2API 'WinSetFocus'                                              7C1
+  1073                using by value HWND-DESKTOP size 4                              7C1
+  1074                      by value hwndEntryField                                   7C1
+  1075     end-if.                                                                    7D7
+  1076*---------------------------------------------------------------*
+  1077 EntryFieldWinProc-E SECTION.                                                   7DB 002A
+  1078 ENTRY 'EWndProc' USING BY VALUE hwnd                                           7DD
+  1079                        BY VALUE msg                                            7DD
+  1080                        BY VALUE mp1                                            7DD
+  1081                        BY VALUE mp2.                                           7E4
+  1082                                                                                7E4
+  1083     MOVE ZERO TO mresult                                                       7E4
+  1084     EVALUATE msg                                                               7EA
+  1085        WHEN WM-CHAR                                                            7EA
+  1086           perform WM-CHAR-routine                                              7F3
+  1087                                                                                7F3
+  1088        WHEN OTHER                                                              7F6
+  1089           PERFORM Call-Default-EntryFieldWinProc                               7F7
+  1090                                                                                7F7
+  1091     END-EVALUATE                                                               7FA
+  1092     EXIT PROGRAM RETURNING mresult.                                            7FB
+  1093                                                                                7FF
+  1094*-----------------------------------------------------------------
+  1095 WM-CHAR-routine section.                                                       802 002B
+  1096     perform strip-sFlag-bits                                                   804
+  1097     if ACTUAL-KC-VIRTUALKEY = 1                                                807
+  1098         if ACTUAL-KC-KEYUP not = 1                                             80D
+  1099             perform process-virtual-keys                                       813
+  1100         else                                                                   816
+  1101             PERFORM Call-Default-EntryFieldWinProc                             817
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  20
+*                                     PMNEWUP.CBL
+  1102         end-if                                                                 81A
+  1103     else                                                                       81B
+  1104         MOVE mp1w1 TO Temp-Word                                                81C
+  1105         MULTIPLY 128 BY Temp-LS                                                823
+  1106         IF  Temp-LS > ZERO                                                     82B
+  1107*----------------------------------------*
+  1108* Field  1 does not allow numerics       *
+  1109* Field  2 is numeric                    *
+  1110* Fields 3 & 4 can be any character      *
+  1111*----------------------------------------*
+  1112            EVALUATE hwnd                                                       832
+  1113               WHEN hwndEntryField-1                                            832
+  1114                  IF  mp2w1 > 47 AND < 58                                       83A
+  1115                     move no-numerics-msg to screen-message                     84C
+  1116                     perform display-screen-message                             86E
+  1117                     PERFORM sound-beep                                         871
+  1118                  ELSE                                                          874
+  1119                     perform test-for-message-suppression                       875
+  1120                     PERFORM Call-Default-EntryFieldWinProc                     878
+  1121                  END-IF                                                        87B
+  1122               WHEN hwndEntryField-2                                            87C
+  1123                  IF  (mp2w1 > 47 AND < 58) OR mp2w1 < 32                       885
+  1124                     perform test-for-message-suppression                       8A1
+  1125                     PERFORM Call-Default-EntryFieldWinProc                     8A4
+  1126                  ELSE                                                          8A7
+  1127                     move numerics-only-msg to screen-message                   8A8
+  1128                     perform display-screen-message                             8C3
+  1129                     PERFORM sound-beep                                         8C6
+  1130                  END-IF                                                        8C9
+  1131               WHEN hwndEntryField-3                                            8CA
+  1132               WHEN hwndEntryField-4                                            8CA
+  1133                  perform test-for-message-suppression                          8DD
+  1134                  PERFORM Call-Default-EntryFieldWinProc                        8E0
+  1135               WHEN OTHER                                                       8E3
+  1136                  PERFORM Call-Default-EntryFieldWinProc                        8E4
+  1137            END-EVALUATE                                                        8E7
+  1138         ELSE                                                                   8EA
+  1139            PERFORM Call-Default-EntryFieldWinProc                              8EB
+  1140         END-IF                                                                 8EE
+  1141     END-IF.                                                                    8EF
+  1142*-----------------------------------------------------------------
+  1143 get-screen-contents section.                                                   8F0
+  1144* For reasons which escape me, it seems that the size of the
+  1145* field must be set to 1 greater than it really is. This is
+  1146* not a bug, it is described as a feature!
+  1147                                                                                8F3 0016
+  1148      call OS2API 'WinQueryWindowText'                                          8F5
+  1149                       using by value hwndEntryField-1                          8F5
+  1150                             by value 6 size 2                                  8F5
+  1151                             by reference entry-field-1                         8F5
+  1152                                                                                8F5
+  1153      call OS2API 'WinQueryWindowText'                                          90D
+  1154                     using by value hwndEntryField-2                            90D
+  1155                           by value 5 size 2                                    90D
+  1156                           by reference entry-field-2-x                         90D
+  1157                                                                                90D
+  1158      call OS2API 'WinQueryWindowText'                                          925
+  1159                     using by value hwndEntryField-3                            925
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  21
+*                                     PMNEWUP.CBL
+  1160                           by value 21 size 2                                   925
+  1161                           by reference entry-field-3                           925
+  1162                                                                                925
+  1163      call OS2API 'WinQueryWindowText'                                          93D
+  1164                     using by value hwndEntryField-4                            93D
+  1165                           by value 21 size 2                                   93D
+  1166                           by reference entry-field-4.                          955
+  1167*-----------------------------------------------------------------
+  1168 Create-Entry-Fields SECTION.                                                   958 0018
+  1169     compute winstyle = WS-VISIBLE + ES-LEFT +                                  95A
+  1170                        ES-MARGIN                                               95A
+  1171     compute x of field-coords = cxClient / 5                                   972
+  1172     compute y of field-coords = cyClient / 2                                   97F
+  1173     call OS2API 'WinCreateWindow'                                              98C
+  1174                 using by value hwndClient                                      98C
+  1175                       by value WC-ENTRYFIELD size 4                            98C
+  1176                       by reference entry-field-1                               98C
+  1177                       by value winstyle                                        98C
+  1178                       by value x of field-coords                               98C
+  1179                       by value y of field-coords                               98C
+  1180                       by value 60            size 2                            98C
+  1181                       by value 14            size 2                            98C
+  1182                       by value hwndClient                                      98C
+  1183                       by value HWND-TOP      size 4                            98C
+  1184                       by value object-id-1   size 2                            98C
+  1185                       by value 0             size 4                            98C
+  1186                       by value 0             size 4                            98C
+  1187                 returning hwndEntryField-1                                     98C
+  1188                                                                                98C
+  1189     move size-of-field-1 to mp3w1                                              9E2
+  1190     move 0 to mp3w2                                                            9E8
+  1191     call OS2API 'WinSendMsg'                                                   9EE
+  1192                    using   by value hwndEntryField-1                           9EE
+  1193                            by value EM-SETTEXTLIMIT   size 2                   9EE
+  1194                            by value mp3                                        9EE
+  1195                            by value 0            size 4                        9EE
+  1196                                                                                9EE
+  1197     compute winstyle = WS-VISIBLE + ES-RIGHT +                                 A0E
+  1198                        ES-MARGIN                                               A0E
+  1199     compute x of field-coords = (cxClient / 5) * 3                             A26
+  1200     compute y of field-coords = cyClient / 2                                   A37
+  1201     call OS2API 'WinCreateWindow'                                              A44
+  1202                 using by value hwndClient                                      A44
+  1203                       by value WC-ENTRYFIELD size 4                            A44
+  1204                       by reference entry-field-2-x                             A44
+  1205                       by value winstyle                                        A44
+  1206                       by value x of field-coords                               A44
+  1207                       by value y of field-coords                               A44
+  1208                       by value 50            size 2                            A44
+  1209                       by value 14            size 2                            A44
+  1210                       by value hwndClient                                      A44
+  1211                       by value HWND-TOP      size 4                            A44
+  1212                       by value object-id-2   size 2                            A44
+  1213                       by value 0             size 4                            A44
+  1214                       by value 0             size 4                            A44
+  1215                 returning hwndEntryField-2                                     A44
+  1216                                                                                A44
+  1217     move size-of-field-2 to mp3w1                                              A9A
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  22
+*                                     PMNEWUP.CBL
+  1218     move 0 to mp3w2                                                            AA0
+  1219     call OS2API 'WinSendMsg'                                                   AA6
+  1220                    using   by value hwndEntryField-2                           AA6
+  1221                            by value EM-SETTEXTLIMIT   size 2                   AA6
+  1222                            by value mp3                                        AA6
+  1223                            by value 0        size 4                            AA6
+  1224                                                                                AA6
+  1225                                                                                AA6
+  1226     compute winstyle = WS-VISIBLE + ES-AUTOSCROLL +                            AC6
+  1227                        ES-MARGIN                                               AC6
+  1228     compute x of field-coords = cxClient / 5                                   ADE
+  1229     compute y of field-coords = cyClient / 4                                   AEB
+  1230     call OS2API 'WinCreateWindow'                                              AF8
+  1231                 using by value hwndClient                                      AF8
+  1232                       by value WC-ENTRYFIELD size 4                            AF8
+  1233                       by reference entry-field-3                               AF8
+  1234                       by value winstyle                                        AF8
+  1235                       by value x of field-coords                               AF8
+  1236                       by value y of field-coords                               AF8
+  1237                       by value 90            size 2                            AF8
+  1238                       by value 14            size 2                            AF8
+  1239                       by value hwndClient                                      AF8
+  1240                       by value HWND-TOP      size 4                            AF8
+  1241                       by value object-id-3   size 2                            AF8
+  1242                       by value 0             size 4                            AF8
+  1243                       by value 0             size 4                            AF8
+  1244                 returning hwndEntryField-3                                     AF8
+  1245                                                                                AF8
+  1246     move size-of-field-3 to mp3w1                                              B4E
+  1247     move 0 to mp3w2                                                            B55
+  1248     call OS2API 'WinSendMsg'                                                   B5B
+  1249                    using   by value hwndEntryField-3                           B5B
+  1250                            by value EM-SETTEXTLIMIT   size 2                   B5B
+  1251                            by value mp3                                        B5B
+  1252                            by value 0            size 4                        B5B
+  1253                                                                                B5B
+  1254     compute winstyle = WS-VISIBLE + ES-AUTOSCROLL +                            B7B
+  1255                        ES-MARGIN                                               B7B
+  1256     compute x of field-coords = (cxClient / 5) * 3                             B93
+  1257     compute y of field-coords = cyClient / 4                                   BA4
+  1258     call OS2API 'WinCreateWindow'                                              BB1
+  1259                 using by value hwndClient                                      BB1
+  1260                       by value WC-ENTRYFIELD size 4                            BB1
+  1261                       by reference entry-field-4                               BB1
+  1262                       by value winstyle                                        BB1
+  1263                       by value x of field-coords                               BB1
+  1264                       by value y of field-coords                               BB1
+  1265                       by value 90            size 2                            BB1
+  1266                       by value 14            size 2                            BB1
+  1267                       by value hwndClient                                      BB1
+  1268                       by value HWND-TOP      size 4                            BB1
+  1269                       by value object-id-4   size 2                            BB1
+  1270                       by value 0             size 4                            BB1
+  1271                       by value 0             size 4                            BB1
+  1272                 returning hwndEntryField-4                                     BB1
+  1273                                                                                BB1
+  1274     move size-of-field-4 to mp3w1                                              C07
+  1275     move 0 to mp3w2                                                            C0E
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  23
+*                                     PMNEWUP.CBL
+  1276     call OS2API 'WinSendMsg'                                                   C14
+  1277                    using   by value hwndEntryField-4                           C14
+  1278                            by value EM-SETTEXTLIMIT   size 2                   C14
+  1279                            by value mp3                                        C14
+  1280                            by value 0            size 4.                       C14
+  1281*-----------------------------------------------------------------
+  1282 Destroy-Entry-Fields section.                                                  C37 0017
+  1283    call OS2API 'WinDestroyWindow'                                              C39
+  1284                   using by value hwndEntryField-1                              C39
+  1285    call OS2API 'WinDestroyWindow'                                              C48
+  1286                   using by value hwndEntryField-2                              C48
+  1287    call OS2API 'WinDestroyWindow'                                              C57
+  1288                   using by value hwndEntryField-3                              C57
+  1289    call OS2API 'WinDestroyWindow'                                              C66
+  1290                   using by value hwndEntryField-4.                             C75
+  1291*-----------------------------------------------------------------
+  1292 Call-Default-EntryFieldWinProc SECTION.                                        C78 0029
+  1293      CALL OS2API DefEntryFieldWinProc                                          C7A
+  1294                  using by value hwnd                                           C7A
+  1295                        by value msg                                            C7A
+  1296                        by value mp1                                            C7A
+  1297                        by value mp2                                            C7A
+  1298                  returning mresult.                                            C9C
+  1299                                                                                C9C
+  1300*-----------------------------------------------------------------
+  1301 Call-Default-WinProc SECTION.                                                  C9F 0015
+  1302      CALL OS2API 'WinDefWindowProc'                                            CA1
+  1303                  using by value hwnd                                           CA1
+  1304                        by value msg                                            CA1
+  1305                        by value mp1                                            CA1
+  1306                        by value mp2                                            CA1
+  1307                  returning mresult.                                            CC3
+  1308*-----------------------------------------------------------------
+  1309 test-for-message-suppression section.                                          CC6 002F
+  1310     if screen-message not = spaces                                             CC8
+  1311         move spaces to screen-message                                          CCE
+  1312         perform display-screen-message                                         CD3
+  1313     end-if.                                                                    CD6
+  1314*-----------------------------------------------------------------
+  1315 sound-beep SECTION.                                                            CDA 002E
+  1316     CALL OS2API 'DOSBEEP'                                                      CDC
+  1317                  USING BY VALUE 512 SIZE 2                                     CDC
+  1318                           VALUE 50  SIZE 2.                                    CDC
+  1319*-----------------------------------------------------------------
+  1320 open-file section.                                                             CF3 0008
+  1321     open i-o PmFile                                                            CF5
+  1322*-----------------------------------------------------------*
+  1323* Create Header and Trailer records, if they are not already
+  1324* present. These make read next and read previous simpler to
+  1325* implement. Particularily for wrapping round the begining and
+  1326* the end of the file.
+  1327*-----------------------------------------------------------*
+  1328     move low-values to file-record-key                                         D1C
+  1329     read PmFile                                                                D22
+  1330         invalid key                                                            D45
+  1331             move 0 to file-numeric-value                                       D54
+  1332             move all "*" to file-another-1                                     D5A
+  1333             move all "*" to file-another-2                                     D60
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  24
+*                                     PMNEWUP.CBL
+  1334             write PmFileRecord                                                 D66
+  1335     end-read                                                                   D81
+  1336     move high-values to file-record-key                                        D83
+  1337     read PmFile                                                                D89
+  1338         invalid key                                                            DAC
+  1339             move 0 to file-numeric-value                                       DBB
+  1340             move all "*" to file-another-1                                     DC1
+  1341             move all "*" to file-another-2                                     DC7
+  1342             write PmFileRecord                                                 DCD
+  1343     end-read.                                                                  DE8
+  1344*-----------------------------------------------------------------
+  1345 delete-record section.                                                         DED 001F
+  1346     perform get-screen-contents                                                DEF
+  1347     move entry-field-1 to file-record-key                                      DF2
+  1348     if file-record-key = spaces or low-values                                  DF8
+  1349         move invalid-key-msg to screen-message                                 E08
+  1350         perform display-screen-message                                         E2A
+  1351     else                                                                       E2D
+  1352         perform confirm-delete-routine                                         E2E
+  1353         if msg-box-answer = MBID-YES                                           E31
+  1354             delete PmFile                                                      E38
+  1355                 invalid key                                                    E4E
+  1356                     move invalid-delete-msg to screen-message                  E5D
+  1357                 not invalid key                                                E7F
+  1358                     move valid-delete-msg to screen-message                    E80
+  1359                     move low-values to entry-field-contents                    E9C
+  1360*                    move 0 to entry-field-2
+  1361                     perform refresh-windows                                    EA2
+  1362             end-delete                                                         EA5
+  1363         else                                                                   EA7
+  1364             move not-deleted-msg to screen-message                             EA8
+  1365         end-if                                                                 EC4
+  1366         perform display-screen-message                                         EC5
+  1367     end-if.                                                                    EC8
+  1368*-----------------------------------------------------------------
+  1369 read-next section.                                                             ECC 0023
+  1370     perform get-screen-contents                                                ECE
+  1371     initialize PmFileRecord                                                    ED1
+  1372     move entry-field-1 to file-record-key.                                     EE9
+  1373     read PmFile                                                                EEF
+  1374     read PmFile next                                                           F17
+  1375     if file-status not = "00" or file-record-key = high-values                 F3F
+  1376         move low-values to file-record-key                                     F4F
+  1377         read PmFile                                                            F55
+  1378         read PmFile next                                                       F7D
+  1379     end-if                                                                     FA5
+  1380     perform fill-screen-from-file-record                                       FA6
+  1381     move valid-load-msg to screen-message                                      FA9
+  1382     perform refresh-windows                                                    FC5
+  1383     perform display-screen-message.                                            FC8
+  1384*-----------------------------------------------------------------
+  1385 read-previous section.                                                         FCE 0022
+  1386     perform get-screen-contents                                                FD0
+  1387     initialize PmFileRecord                                                    FD3
+  1388     move entry-field-1 to file-record-key                                      FEB
+  1389     read PmFile                                                                FF1
+  1390     read PmFile previous                                                      1019
+  1391     if file-status not = "00" or file-record-key = low-values                 1041
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  25
+*                                     PMNEWUP.CBL
+  1392         move high-values to file-record-key                                   1051
+  1393         read PmFile                                                           1057
+  1394         read PmFile previous                                                  107F
+  1395     end-if                                                                    10A7
+  1396     perform fill-screen-from-file-record                                      10A8
+  1397     move valid-load-msg to screen-message                                     10AB
+  1398     perform refresh-windows                                                   10C7
+  1399     perform display-screen-message.                                           10CA
+  1400*-----------------------------------------------------------------
+  1401 clear-record section.                                                         10D0 0024
+  1402     move low-values to entry-field-contents                                   10D2
+  1403*    move 0 to entry-field-2
+  1404     move spaces to screen-message                                             10D8
+  1405     perform refresh-windows                                                   10DD
+  1406     perform display-screen-message.                                           10E0
+  1407*-----------------------------------------------------------------
+  1408 load-record section.                                                          10E6 001E
+  1409     perform get-screen-contents                                               10E8
+  1410     initialize PmFileRecord                                                   10EB
+  1411     move entry-field-1 to file-record-key.                                    1103
+  1412     if file-record-key = spaces or low-values or high-values                  1109
+  1413         move invalid-key-msg to screen-message                                1122
+  1414         perform display-screen-message                                        1144
+  1415     else                                                                      1147
+  1416         read PmFile                                                           1148
+  1417             invalid key                                                       116B
+  1418                 move low-values to entry-field-contents                       117A
+  1419*                move 0 to entry-field-2
+  1420                 move file-record-key to entry-field-1                         1180
+  1421                 move invalid-load-msg to screen-message                       1186
+  1422             not invalid key                                                   11A8
+  1423                 perform fill-screen-from-file-record                          11A9
+  1424                 move valid-load-msg to screen-message                         11AC
+  1425         end-read                                                              11C8
+  1426         perform refresh-windows                                               11CA
+  1427         perform display-screen-message                                        11CD
+  1428     end-if.                                                                   11D0
+  1429*---------------------------------------------------------------*
+  1430 save-new-record section.                                                      11D4 0020
+  1431     perform get-screen-contents                                               11D6
+  1432     perform fill-file-record-from-screen                                      11D9
+  1433     if file-record-key = spaces or low-values or high-values                  11DC
+  1434         move invalid-key-msg to screen-message                                11F5
+  1435         perform display-screen-message                                        1217
+  1436     else                                                                      121A
+  1437         write PmFileRecord                                                    121B
+  1438             invalid key                                                       1231
+  1439                 move invalid-new-msg to screen-message                        1240
+  1440             not invalid key                                                   1262
+  1441                 move valid-new-msg to screen-message                          1263
+  1442         end-write                                                             127F
+  1443         perform display-screen-message                                        1281
+  1444    end-if.                                                                    1284
+  1445*---------------------------------------------------------------*
+  1446 overwrite-record section.                                                     1288 0021
+  1447     perform get-screen-contents                                               128A
+  1448     perform fill-file-record-from-screen.                                     128D
+  1449     if file-record-key = spaces or low-values or high-values                  1290
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  26
+*                                     PMNEWUP.CBL
+  1450         move invalid-key-msg to screen-message                                12A9
+  1451         perform display-screen-message                                        12CB
+  1452     else                                                                      12CE
+  1453         rewrite PmFileRecord                                                  12CF
+  1454             invalid key                                                       12E5
+  1455                 move invalid-overwrite-msg to screen-message                  12F4
+  1456             not invalid key                                                   1316
+  1457                 move valid-overwrite-msg to screen-message                    1317
+  1458         end-rewrite                                                           1333
+  1459         perform display-screen-message                                        1335
+  1460     end-if.                                                                   1338
+  1461*---------------------------------------------------------------*
+  1462 display-screen-message section.                                               133C 002D
+  1463     if screen-message(1:5) = "ERROR"                                          133E
+  1464        call OS2API 'WinReleasePS'                                             1348
+  1465                using by value hps                                             1348
+  1466                                                                               1348
+  1467        call OS2API 'WinMessageBox'                                            1357
+  1468                using by value HWND-DESKTOP size 4                             1357
+  1469                      by value HWND-DESKTOP size 4                             1357
+  1470                      by reference screen-message                              1357
+  1471                      by reference szClientClass                               1357
+  1472                      by value 0 size 2                                        1357
+  1473                      by value MB-HELP size 2                                  1357
+  1474        move spaces to screen-message                                          1380
+  1475     end-if                                                                    1385
+  1476     move 1   to RECTL-xleft                                                   1386
+  1477     move 15  to RECTL-yBottom                                                 138C
+  1478     move 300 to RECTL-xRight                                                  1393
+  1479     move 35  to RECTL-yTop                                                    139B
+  1480     call OS2API 'WinInvalidateRect'                                           13A2
+  1481                     using by value hwndClient                                 13A2
+  1482                           by reference rectl                                  13A2
+  1483                           by value 0 size 2.                                  13A2
+  1484*---------------------------------------------------------------*
+  1485 fill-file-record-from-screen section.                                         13BD 0032
+  1486     move entry-field-1 to file-record-key                                     13BF
+  1487     move entry-field-2 to file-numeric-value                                  13C5
+  1488     move entry-field-3 to file-another-1                                      13CB
+  1489     move entry-field-4 to file-another-2.                                     13D1
+  1490*---------------------------------------------------------------*
+  1491 fill-screen-from-file-record section.                                         13DA 0031
+  1492     move file-record-key    to entry-field-1                                  13DC
+  1493     move file-numeric-value to entry-field-2                                  13E2
+  1494     move file-another-1     to entry-field-3                                  13E8
+  1495     move file-another-2     to entry-field-4.                                 13EE
+  1496*---------------------------------------------------------------*
+  1497 refresh-windows section.                                                      13F4
+  1498                                                                               13F7 0030
+  1499     call OS2API 'WinSetWindowText'                                            13F9
+  1500                 using by value hwndEntryField-1                               13F9
+  1501                       by reference entry-field-1                              13F9
+  1502                                                                               13F9
+  1503     call OS2API 'WinSetWindowText'                                            140C
+  1504                 using by value hwndEntryField-2                               140C
+  1505                       by reference entry-field-2-x                            140C
+  1506                                                                               140C
+  1507     call OS2API 'WinSetWindowText'                                            141F
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  27
+*                                     PMNEWUP.CBL
+  1508                 using by value hwndEntryField-3                               141F
+  1509                       by reference entry-field-3                              141F
+  1510                                                                               141F
+  1511     call OS2API 'WinSetWindowText'                                            1432
+  1512                 using by value hwndEntryField-4                               1432
+  1513                       by reference entry-field-4.                             1445
+  1514*---------------------------------------------------------------*
+  1515 strip-sFlag-bits section.                                                     1448 002C
+  1516     move fs to sFlag                                                          144A
+  1517     divide sFlag     by 2 giving temp-num1                                    1451
+  1518                        remainder ACTUAL-KC-CHAR                               1451
+  1519     divide temp-num1 by 2 giving temp-num2                                    1469
+  1520                        remainder ACTUAL-KC-VIRTUALKEY                         146A
+  1521     divide temp-num2 by 2 giving temp-num1                                    1482
+  1522                        remainder ACTUAL-KC-SCANCODE                           1483
+  1523     divide temp-num1 by 2 giving temp-num2                                    149B
+  1524                        remainder ACTUAL-KC-SHIFT                              149C
+  1525     divide temp-num2 by 2 giving temp-num1                                    14B4
+  1526                        remainder ACTUAL-KC-CTRL                               14B5
+  1527     divide temp-num1 by 2 giving temp-num2                                    14CD
+  1528                        remainder ACTUAL-KC-ALT                                14CE
+  1529     divide temp-num2 by 2 giving temp-num1                                    14E6
+  1530                        remainder ACTUAL-KC-KEYUP                              14E7
+  1531     divide temp-num1 by 2 giving temp-num2                                    14FF
+  1532                        remainder ACTUAL-KC-PREVDOWN                           1500
+  1533     divide temp-num2 by 2 giving temp-num1                                    1518
+  1534                        remainder ACTUAL-KC-LONEKEY                            1519
+  1535     divide temp-num1 by 2 giving temp-num2                                    1531
+  1536                        remainder ACTUAL-KC-DEADKEY                            1532
+  1537     divide temp-num2 by 2 giving temp-num1                                    154A
+  1538                        remainder ACTUAL-KC-COMPOSITE                          154B
+  1539     divide temp-num1 by 2 giving temp-num2                                    1563
+  1540                        remainder ACTUAL-KC-INVALIDCOMP                        1564
+  1541     divide temp-num2 by 2 giving temp-num1                                    157C
+  1542                        remainder ACTUAL-KC-TOGGLE                             157D
+  1543     divide temp-num1 by 2 giving temp-num2                                    1595
+  1544                        remainder ACTUAL-KC-INVALIDCHAR.                       15AE
+  1545*---------------------------------------------------------------*
+  1546 kill-focus section.                                                           15B1 0019
+  1547     call OS2API 'WinSubClassWindow'                                           15B3
+  1548                     using by value mp2                                        15B3
+  1549                           by value DefEntryFieldWinProc                       15B3
+  1550                     returning DefEntryFieldWinProc.                           15CA
+  1551*---------------------------------------------------------------*
+  1552 set-focus-1 section.                                                          15CD 001A
+  1553     move 1 to object-flag                                                     15CF
+  1554     call OS2API 'WinSubClassWindow'                                           15D5
+  1555                       using by value hwndEntryField-1                         15D5
+  1556                             by value EntryFieldWinproc                        15D5
+  1557                       returning DefEntryFieldWinProc.                         15EC
+  1558*---------------------------------------------------------------*
+  1559 set-focus-2 section.                                                          15EF 001B
+  1560     move 2 to object-flag                                                     15F1
+  1561     call OS2API 'WinSubClassWindow'                                           15F7
+  1562                       using by value hwndEntryField-2                         15F7
+  1563                             by value EntryFieldWinproc                        15F7
+  1564                       returning DefEntryFieldWinProc.                         160E
+  1565*---------------------------------------------------------------*
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002 13-May-90 19:46 Page  28
+*                                     PMNEWUP.CBL
+  1566 set-focus-3 section.                                                          1611 001C
+  1567     move 3 to object-flag                                                     1613
+  1568     call OS2API 'WinSubClassWindow'                                           1619
+  1569                       using by value hwndEntryField-3                         1619
+  1570                             by value EntryFieldWinproc                        1619
+  1571                       returning DefEntryFieldWinProc.                         1630
+  1572*---------------------------------------------------------------*
+  1573 set-focus-4 section.                                                          1633 001D
+  1574     move 4 to object-flag                                                     1635
+  1575     call OS2API 'WinSubClassWindow'                                           163B
+  1576                       using by value hwndEntryField-4                         163B
+  1577                             by value EntryFieldWinproc                        163B
+  1578                       returning DefEntryFieldWinProc.                         1652
+* Micro Focus COBOL/2 Version 2.4.18 L2.3 revision 002
+* Copyright (C) 1985,1990 Micro Focus Ltd.     URN AXUPA/MF0/30034
+*                                              REF GNB-000049002A6
+*
+* Total Messages:     0
+* Data:        1456     Code:        5758     Dictionary:       23549

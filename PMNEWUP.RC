@@ -1,0 +1,38 @@
+/*----------------------------------
+   PMNEWUP.RC resource script file
+  ----------------------------------*/
+#include <os2.h>
+#include "pmnewup.h"
+
+ICON    1   pmnewup.ico
+
+MENU ID_RESOURCE
+     {
+     SUBMENU "~File",              IDM_FILE
+          {
+          MENUITEM "~Read\tF3",                  IDM_READ
+          MENUITEM "~Delete\tF4",                IDM_DELETE
+          MENUITEM "~Write\tF5",                 IDM_WRITE
+          MENUITEM "Rewri~te\tF6",               IDM_REWRITE
+          MENUITEM "~Previous\tF7",              IDM_PREVIOUS
+          MENUITEM "~Next\tF8",                  IDM_NEXT
+          MENUITEM "~Clear\tF9",                 IDM_CLEAR
+          }
+     SUBMENU "E~xit",              IDM_TOPEXIT
+          {
+          MENUITEM "E~xit File update",      IDM_EXIT
+          MENUITEM "~Resume File update",    IDM_RESUME
+          }
+     MENUITEM "F1=Help",           IDM_HELP, MIS_HELP | MIS_BUTTONSEPARATOR
+     }
+
+ACCELTABLE ID_RESOURCE
+     {
+     VK_F3, IDM_READ,     VIRTUALKEY
+     VK_F4, IDM_DELETE,   VIRTUALKEY
+     VK_F5, IDM_WRITE,    VIRTUALKEY
+     VK_F6, IDM_REWRITE,  VIRTUALKEY
+     VK_F7, IDM_PREVIOUS, VIRTUALKEY
+     VK_F8, IDM_NEXT,     VIRTUALKEY
+     VK_F9, IDM_CLEAR,    VIRTUALKEY
+     }

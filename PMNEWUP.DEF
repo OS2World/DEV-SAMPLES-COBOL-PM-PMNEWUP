@@ -1,0 +1,7 @@
+NAME  PMNEWUP WINDOWAPI
+PROTMODE
+STACKSIZE   16384
+EXPORTS
+  ClientWndProc @1
+  EWndProc      @2
+

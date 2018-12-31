@@ -1,0 +1,13 @@
+#--------------
+# PMNEWUP make file
+#
+#--------------
+
+pmnewup.obj : pmnewup.cbl pmnewup.cpy
+        cobol pmnewup ganim omf(obj) litlink;
+        rc -r pmnewup.rc
+
+pmnewup.exe : pmnewup.obj extfh.obj pmnewup.def pmnewup.rc pmnewup.h pmnewup.res
+        link pmnewup extfh,,,coblib os2,pmnewup
+        rc pmnewup.res pmnewup.exe
+
